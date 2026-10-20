@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Table</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="main-nav">
+        <a href="index.html">Home</a> |
+        <a href="about.html">About</a> |
+        <a href="contact.html">Contact</a> |
+        <a href="validation.html">Registration</a> |
+        <a href="data.html">Data Table</a>
+    </nav>
+
+    <h1 class="page-title">People Data Table</h1>
+
+    <div class="toolbar">
+        <input type="text" id="search" placeholder="Search by name, age or city...">
+    </div>
+
+    <div>
+        <button type="button" class="btn" id="sortName">Sort by Name</button>
+        <button type="button" class="btn" id="sortAge">Sort by Age</button>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Name</th><th>Age</th><th>City</th></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+    <p id="noResults" class="page-title" style="display:none">No results found.</p>
+
+    <div><a href="index.html">back</a></div>
+
+    <script>
+        const people = [
+            { name: "Ahmed",   age: 22, city: "Cairo" },
+            { name: "Sara",    age: 19, city: "Giza" },
+            { name: "Omar",    age: 25, city: "Alexandria" },
+            { name: "Mona",    age: 21, city: "Cairo" },
+            { name: "Youssef", age: 30, city: "Mansoura" },
+            { name: "Laila",   age: 18, city: "Giza" },
+            { name: "Khaled",  age: 27, city: "Aswan" },
+            { name: "Nour",    age: 23, city: "Alexandria" }
+        ];
+
+        const tableBody = document.getElementById("tableBody");
+        const searchBox = document.getElementById("search");
+        let nameAsc = true;
+        let ageAsc = true;
+
+        function render(list) {
+            tableBody.innerHTML = "";
+            list.forEach(p => {
+                const row = document.createElement("tr");
+                [p.name, p.age, p.city].forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+                tableBody.appendChild(row);
+            });
+            document.getElementById("noResults").style.display = list.length ? "none" : "block";
+        }
+
+        // Filter while typing (no button needed)
+        function getFiltered() {
+            const q = searchBox.value.trim().toLowerCase();
+            return people.filter(p =>
+                p.name.toLowerCase().includes(q) ||
+                String(p.age).includes(q) ||
+                p.city.toLowerCase().includes(q)
+            );
+        }
+
+        searchBox.addEventListener("input", () => render(getFiltered()));
+
+        // Sorting changes the main array, then re-applies the current search
+        document.getElementById("sortName").addEventListener("click", () => {
+            people.sort((a, b) => nameAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+            nameAsc = !nameAsc;
+            render(getFiltered());
+        });
+
+        document.getElementById("sortAge").addEventListener("click", () => {
+            people.sort((a, b) => ageAsc ? a.age - b.age : b.age - a.age);
+            ageAsc = !ageAsc;
+            render(getFiltered());
+        });
+
+        render(people);
+    </script>
+</body>
+</html>

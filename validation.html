@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="main-nav">
+        <a href="index.html">Home</a> |
+        <a href="about.html">About</a> |
+        <a href="contact.html">Contact</a> |
+        <a href="validation.html">Registration</a> |
+        <a href="data.html">Data Table</a>
+    </nav>
+
+    <h1 class="page-title">Registration Form</h1>
+
+    <form id="regForm" novalidate>
+        <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name">
+            <span class="error" id="nameError"></span>
+        </div>
+
+        <div class="field">
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email">
+            <span class="error" id="emailError"></span>
+        </div>
+
+        <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password">
+            <span class="error" id="passwordError"></span>
+        </div>
+
+        <div class="field">
+            <label for="confirm">Confirm Password</label>
+            <input type="password" id="confirm" name="confirm">
+            <span class="error" id="confirmError"></span>
+        </div>
+
+        <div class="field">
+            <label for="age">Age</label>
+            <input type="text" id="age" name="age">
+            <span class="error" id="ageError"></span>
+        </div>
+
+        <div>
+            <button type="submit" class="btn">Register</button>
+        </div>
+
+        <div class="success" id="successMsg">Registration successful!</div>
+    </form>
+
+    <div><a href="index.html">back</a></div>
+
+    <script>
+        const form = document.getElementById("regForm");
+        const fields = ["name", "email", "password", "confirm", "age"];
+
+        // Each validator returns an error message, or "" if the value is fine.
+        const validators = {
+            name(v) {
+                if (v.trim() === "") return "Name is required.";
+                if (v.trim().length < 3) return "Name must be at least 3 characters.";
+                return "";
+            },
+            email(v) {
+                if (v.trim() === "") return "Email is required.";
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim())) return "Please enter a valid email, e.g. name@example.com.";
+                return "";
+            },
+            password(v) {
+                if (v === "") return "Password is required.";
+                if (v.length < 8) return "Password must be at least 8 characters.";
+                return "";
+            },
+            confirm(v) {
+                if (v === "") return "Please confirm your password.";
+                if (v !== document.getElementById("password").value) return "Passwords do not match.";
+                return "";
+            },
+            age(v) {
+                if (v.trim() === "") return "Age is required.";
+                const n = Number(v);
+                if (!Number.isInteger(n)) return "Age must be a whole number.";
+                if (n < 1 || n > 120) return "Age must be between 1 and 120.";
+                return "";
+            }
+        };
+
+        function validateField(id) {
+            const input = document.getElementById(id);
+            const message = validators[id](input.value);
+            document.getElementById(id + "Error").textContent = message;
+            input.classList.toggle("invalid", message !== "");
+            input.classList.toggle("valid", message === "");
+            return message === "";
+        }
+
+        // Live feedback while typing
+        fields.forEach(id => {
+            document.getElementById(id).addEventListener("input", () => {
+                validateField(id);
+                if (id === "password" && document.getElementById("confirm").value !== "") {
+                    validateField("confirm");
+                }
+            });
+        });
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault(); // never send the form automatically
+            const success = document.getElementById("successMsg");
+            success.style.display = "none";
+
+            let allValid = true;
+            fields.forEach(id => {
+                if (!validateField(id)) allValid = false;
+            });
+
+            if (allValid) {
+                success.style.display = "block";
+                form.reset();
+                fields.forEach(id => document.getElementById(id).classList.remove("valid"));
+            }
+        });
+    </script>
+</body>
+</html>
